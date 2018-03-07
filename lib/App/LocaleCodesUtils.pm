@@ -104,6 +104,37 @@ $res = gen_read_table_func(
 );
 die "Can't generate list_languages(): $res->[0] - $res->[1]" unless $res->[0] == 200;
 
+$res = gen_read_table_func(
+    name => 'list_scripts',
+    summary => 'List scripts',
+    table_data => sub {
+        require Locale::Script;
+        my @codes = Locale::Script::all_script_codes();
+        my @data;
+        for (@codes) {
+            push @data, [$_, Locale::Script::code2script($_)];
+        }
+        return { data=>\@data };
+    },
+    table_spec => {
+        summary => 'List of scripts',
+        fields => {
+            code => {
+                schema => 'str*',
+                pos => 0,
+                sortable => 1,
+            },
+            name => {
+                schema => 'str*',
+                pos => 1,
+                sortable => 1,
+            },
+        },
+        pk => 'code',
+    },
+);
+die "Can't generate list_scripts(): $res->[0] - $res->[1]" unless $res->[0] == 200;
+
 1;
 #ABSTRACT: Utilities related to locale codes
 
