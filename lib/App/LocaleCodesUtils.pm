@@ -1,6 +1,8 @@
 package App::LocaleCodesUtils;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010001;
@@ -47,17 +49,19 @@ $res = gen_read_table_func(
     summary => 'List countries',
     table_data => sub {
         require Locale::Country;
-        my @codes = Locale::Country::all_country_codes();
+        my @alpha2s = Locale::Country::all_country_codes('alpha-2');
         my @data;
-        for (@codes) {
-            push @data, [$_, Locale::Country::code2country($_)];
+        for my $alpha2 (@alpha2s) {
+            my $country = Locale::Country::code2country($alpha2, 'alpha-2');
+            my $alpha3  = Locale::Country::country2code($country, 'alpha-3');
+            push @data, [$alpha2, $country, $alpha3];
         }
         return { data=>\@data };
     },
     table_spec => {
         summary => 'List of countries',
         fields => {
-            code => {
+            alpha2 => {
                 schema => 'str*',
                 pos => 0,
                 sortable => 1,
@@ -67,8 +71,13 @@ $res = gen_read_table_func(
                 pos => 1,
                 sortable => 1,
             },
+            alpha3 => {
+                schema => 'str*',
+                pos => 2,
+                sortable => 1,
+            },
         },
-        pk => 'code',
+        pk => 'alpha2',
     },
 );
 die "Can't generate list_countries(): $res->[0] - $res->[1]" unless $res->[0] == 200;
@@ -78,17 +87,19 @@ $res = gen_read_table_func(
     summary => 'List languages',
     table_data => sub {
         require Locale::Language;
-        my @codes = Locale::Language::all_language_codes();
+        my @alpha2s = Locale::Language::all_language_codes('alpha-2');
         my @data;
-        for (@codes) {
-            push @data, [$_, Locale::Language::code2language($_)];
+        for my $alpha2 (@alpha2s) {
+            my $lang   = Locale::Language::code2language($alpha2, 'alpha-2');
+            my $alpha3 = Locale::Language::language2code($lang, 'alpha-3');
+            push @data, [$alpha2, $lang, $alpha3];
         }
         return { data=>\@data };
     },
     table_spec => {
         summary => 'List of languages',
         fields => {
-            code => {
+            alpha2 => {
                 schema => 'str*',
                 pos => 0,
                 sortable => 1,
@@ -98,8 +109,13 @@ $res = gen_read_table_func(
                 pos => 1,
                 sortable => 1,
             },
+            alpha3 => {
+                schema => 'str*',
+                pos => 2,
+                sortable => 1,
+            },
         },
-        pk => 'code',
+        pk => 'alpha2',
     },
 );
 die "Can't generate list_languages(): $res->[0] - $res->[1]" unless $res->[0] == 200;
